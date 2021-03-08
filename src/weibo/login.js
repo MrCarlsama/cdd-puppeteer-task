@@ -3,6 +3,7 @@ const readline = require('readline');
 const {createWriteStream, readFile} = require('fs');
 const {USERNAME, PASSWORD} = require('./cdd.config');
 const log = require('../utils');
+const {kStringMaxLength} = require('buffer');
 
 /**
  * @async 开始登录
@@ -14,7 +15,7 @@ const loginHandle = async (page) => {
   await page.waitForSelector('a[node-type=loginBtn]');
 
   // 点击登录
-  await page.click('a[node-type=loginBtn]');
+  // await page.click('a[node-type=loginBtn]');
 
   await inputLoginTypeHandle(page);
 
@@ -25,9 +26,9 @@ const loginHandle = async (page) => {
  * 确认是否需要登录
  */
 const checkIsNeedLoginHandle = async (page) => {
-  console.log((await page.$('div[node-type=login_frame]')) === null);
+  console.log((await page.$('a[node-type=loginBtn]')) === null);
   // 如果弹出登录框 则进行登录
-  if ((await page.$('div[node-type=login_frame]')) === null) {
+  if ((await page.$('a[node-type=loginBtn]')) === null) {
     return Promise.resolve(false);
   } else {
     await inputLoginTypeHandle(page);
@@ -41,23 +42,35 @@ const checkIsNeedLoginHandle = async (page) => {
  * 输入登录账号密码
  */
 const inputLoginTypeHandle = async (page) => {
-  // 等待加载登录DOM节点
-  await page.waitForSelector(
-    'div[node-type=login_frame] input[node-type=username]'
-  );
+  try {
+    // 点击登录
+    await page.click('a[node-type=loginBtn]');
+    // 等待加载登录DOM节点
+    await page.waitForSelector(
+      'div[node-type=login_frame] input[node-type=username]'
+    );
 
-  // 输入账号密码
-  await page.type(
-    'div[node-type=login_frame] input[node-type=username]',
-    USERNAME
-  );
-  await page.type(
-    'div[node-type=login_frame] input[node-type=password]',
-    PASSWORD
-  );
-  await page.click('div[node-type=login_frame] a[action-type=btn_submit]');
+    // 输入账号密码
+    await page.type(
+      'div[node-type=login_frame] input[node-type=username]',
+      USERNAME
+    );
+    await page.type(
+      'div[node-type=login_frame] input[node-type=password]',
+      PASSWORD
+    );
+    await page.click('div[node-type=login_frame] a[action-type=btn_submit]');
 
-  return Promise.resolve();
+    return Promise.resolve();
+  } catch (e) {
+    console.log(e);
+    log.error('等待错误，重新加载');
+    page.reload({
+      waitUntil: ['load', 'domcontentloaded'],
+      timeout: 0,
+    });
+    return inputLoginTypeHandle(page);
+  }
 };
 
 /**

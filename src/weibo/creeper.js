@@ -17,8 +17,8 @@ const gotoTargetHomePage = async (page, {url}) => {
     timeout: 0,
     waitUntil: ['load', 'domcontentloaded'],
   });
-  console.log(page.url() !== url);
   // 非指定目标页时， 等待一些验证跳转
+  console.log(page.url());
   if (page.url() !== url) {
     await page.waitForNavigation({
       timeout: 0,

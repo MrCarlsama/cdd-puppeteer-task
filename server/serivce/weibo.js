@@ -18,25 +18,22 @@ const getUserContentsByCurrentPages = async (url, {pageIndex}) => {
     browser = await getBrowser();
   }
 
-  const page = await init(browser, 'http');
+  const page = await getPage(browser);
 
   // 跳转网页
   await gotoTargetHomePage(page, {
     url,
   });
-
-  await gotoTargetPages(page, pageIndex);
-
   const isCheckLoginResult = await checkIsNeedLoginHandle(page);
 
-  if (isCheckLoginResult) {
-    // 等待一些验证跳转
+  // 非指定目标页时， 等待一些验证跳转
+  if (!page.url().includes(url) && isCheckLoginResult) {
     await page.waitForNavigation({
       timeout: 0,
       waitUntil: ['load', 'domcontentloaded'],
     });
-    await gotoTargetPages(page, pageIndex);
   }
+  await gotoTargetPages(page, pageIndex);
 
   const contents = await getContents(page);
 
