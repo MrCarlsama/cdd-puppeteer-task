@@ -1,3 +1,4 @@
+const {default: axios} = require('axios');
 const Router = require('koa-router');
 const router = Router();
 const weiboSerivce = require('../serivce/weibo');
@@ -11,6 +12,20 @@ router.post('/task/weibo', async (ctx, next) => {
   const curretContents = await weiboSerivce.getUserContentsByCurrentPages(url, {
     pageIndex,
   });
+
+  console.log(curretContents);
+
+  axios
+    .post('localhost:3000/cdd/createPhotos', {
+      data: curretContents,
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
   ctx.body = curretContents;
 });
 

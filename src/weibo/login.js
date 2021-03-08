@@ -42,35 +42,25 @@ const checkIsNeedLoginHandle = async (page) => {
  * 输入登录账号密码
  */
 const inputLoginTypeHandle = async (page) => {
-  try {
-    // 点击登录
-    await page.click('a[node-type=loginBtn]');
-    // 等待加载登录DOM节点
-    await page.waitForSelector(
-      'div[node-type=login_frame] input[node-type=username]'
-    );
+  // 点击登录
+  await page.click('a[node-type=loginBtn]');
+  // 等待加载登录DOM节点
+  await page.waitForSelector(
+    'div[node-type=login_frame] input[node-type=username]'
+  );
 
-    // 输入账号密码
-    await page.type(
-      'div[node-type=login_frame] input[node-type=username]',
-      USERNAME
-    );
-    await page.type(
-      'div[node-type=login_frame] input[node-type=password]',
-      PASSWORD
-    );
-    await page.click('div[node-type=login_frame] a[action-type=btn_submit]');
+  // 输入账号密码
+  await page.type(
+    'div[node-type=login_frame] input[node-type=username]',
+    USERNAME
+  );
+  await page.type(
+    'div[node-type=login_frame] input[node-type=password]',
+    PASSWORD
+  );
+  await page.click('div[node-type=login_frame] a[action-type=btn_submit]');
 
-    return Promise.resolve();
-  } catch (e) {
-    console.log(e);
-    log.error('等待错误，重新加载');
-    page.reload({
-      waitUntil: ['load', 'domcontentloaded'],
-      timeout: 0,
-    });
-    return inputLoginTypeHandle(page);
-  }
+  return Promise.resolve();
 };
 
 /**
