@@ -15,10 +15,11 @@ router.post('/task/weibo', async (ctx, next) => {
 
   console.log(curretContents);
 
-  axios
-    .post('localhost:3000/cdd/createPhotos', {
-      data: curretContents,
-    })
+  axios({
+    method: 'post',
+    url: 'http://192.168.4.5:3000/api/cdd/createPhotos',
+    data: curretContents,
+  })
     .then((res) => {
       console.log(res);
     })
